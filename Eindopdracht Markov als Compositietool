@@ -1,0 +1,222 @@
+#lang racket
+
+; Eindopdracht Markov als Compositietool
+
+; Opdracht 1 - Zoek melodieën
+Zie
+D:\School\SysBas\Scheme Opdrachten\Eindopdracht Scheme\
+voor de partituren
+
+; Opdracht 2 - Teken de graphs
+Hieronder staan de noten/nootlengtes met daarachter hun mogelijke opvolgers:
+
+Aqua - Barbie Girl
+
+gis -> e, cis, fis
+e   -> gis, dis, e, cis
+cis -> a, fis
+a   -> e, a, fis
+dis -> fis
+fis -> b, e, cis, dis, fis
+b   -> gis
+
+8 -> 8 2 4
+2 -> 8
+4 -> 8 4
+
+Tom Jones - Sex Bomb
+
+c   -> a, d, c, b
+a   -> c, d, b, gis
+d   -> c, a
+b   -> b, a
+gis -> gis, a
+
+4 -> 4 8
+8 -> 8 4
+
+; Opdracht 3 - Nieuwe Compositie
+De nieuwe melodie moet bestaan uit een rij noten die bepaald worden door een algoritme.
+Dit algoritme moet ervoor zorgen dat steeds de eerstvolgende noot bepaald wordt d.m.v. de graphs uit de vorige opdracht.
+Hetzelfde moet gebeuren met de nootlengtes. Deze worden ook uit de graphs gehaald en zo wordt bepaald door het algoritme welke
+nootlengte de noten moeten krijgen.
+
+In beide melodieën zitten veel meer 8e noten dan kwart of halve noten. Hierdoor is het misschien handig om in de daadwerkelijke -schemelijst-
+een 8 er bij te zetten zodat er meer kans is dat de volgende noot een 8e noot is. Dit kan natuurlijk later altijd aangepast worden.
+
+; Opdracht 4 - Algoritme
+Als eerste moet ik de (get-successor) functie gebruiken uit de opdracht van 19-10-17. Deze functie ga ik gebruiken om steeds de volgende noot/nootlengte te kiezen.
+Daarna moet ik de graph van een melodie in lijstjes zetten die in één grote lijst zit. Dus er komt een noot-successor-lijst en een nootlengte-successor-lijst.
+
+Als dat klaar is moet er een functie komen die de melodie zelf maakt d.m.v. de successor functie te gebruiken. Dus als deze functie wordt uitgevoerd komt er steeds
+een andere melodie uit. Deze functie moet ook voor de nootlengtes komen.
+
+Daarna moeten deze functies worden uitgevoerd om de daadwerkelijke melodie en ritme te maken. Als laatste wordt deze melodie omhoog getransponeerd,
+samen gevoegd met het ritme en wordt het geschreven in een lilypond bestand (.ly) net zoals bij de opdracht van 21-09-17.
+
+; Opdracht 5 - Werk je algoritme uit in Scheme
+
+; ----------------------------------------------------------------------------------------------------------------------------------------------------------- ;
+; ------------------------------------------------------------------ CODE STARTS FROM HERE ------------------------------------------------------------------ ;
+; ----------------------------------------------------------------------------------------------------------------------------------------------------------- ;
+
+(require csd/graph_utils)
+(require csd/music_transforms)
+(require csd/lilypond)
+
+; Function that can get a random successor when a note is given.
+(define (get-note lst symbol)
+	(if
+		(empty? lst)
+		'()
+		(if
+			(eq? (first (first lst)) symbol)
+			(first (shuffle (rest (first lst))))
+			(get-note (rest lst) symbol)
+		)
+	)
+)
+
+(define (get-rythm lst symbol)
+	(if
+		(empty? lst)
+		'()
+		(if
+			(= (first (first lst)) symbol)
+			(first (shuffle (rest (first lst))))
+			(get-rythm (rest lst) symbol)
+		)
+	)
+)
+
+; ----------------------- Aqua - Barbie Girl ----------------------- ;
+
+; All the notes in the melody with their following successors.
+(define aqua_barbiegirl '(
+		(gis e cis fis)
+		(e gis dis e cis)
+		(cis a fis)
+		(a e a fis)
+		(dis fis)
+		(fis b e cis dis fis)
+		(b gis)
+	)
+)
+
+; Added an extra '8 everywhere because the melody mostly contains eigth notes.
+(define ritme_aqua_barbiegirl '(
+		(8 8 2 4 8)
+		(2 8 8)
+		(4 8 4 8)
+	)
+)
+
+(validate-graph aqua_barbiegirl)
+; Gives #t
+(validate-graph ritme_aqua_barbiegirl)
+; Gives #t
+
+; Function that creates the melody with the successors.
+(define (startmelodie_aqua n [x 1])
+	(if
+		(= x 45)
+		'()
+		(cons
+			n
+			(startmelodie_aqua (get-note aqua_barbiegirl n) (+ x 1))
+		)
+	)
+)
+
+; Function that creates the rythm with the successors.
+(define (startritme_aqua n [x 1])
+	(if
+		(= x 45)
+		'()
+		(cons
+			n
+			(startritme_aqua (get-rythm ritme_aqua_barbiegirl n) (+ x 1))
+		)
+	)
+)
+
+; Melody starts with 'g because the original melody starts with the 'g aswell.
+(define melodie_aqua (startmelodie_aqua 'gis))
+(define ritme_aqua (startritme_aqua 8))
+(define MIDI_melodie_aqua (make-phrase (notes-to-numbers melodie_aqua) ritme_aqua))
+(define final_melodie_aqua (transpose-phrase MIDI_melodie_aqua 60))
+
+(lilypond-open "Aqua - Barbie Girl (Reprise).ly")
+(lilypond-title "Aqua - Barbie Girl (Reprise)")
+(lilypond-composer "by T. Nieuwenhuis")
+(lilypond-key "c" "major")
+(lilypond-clef "treble")
+(lilypond-tempo 130) ; Original song also has 130 bpm
+(lilypond-instrument "guitar" "acoustic guitar (nylon)")
+(lilypond-write final_melodie_aqua)
+(lilypond-close)
+
+; ----------------------- Tom Jones - Sex Bomb ----------------------- ;
+
+; All the notes in the melody with their following successors.
+(define tomjones_sexbomb '(
+		(c a d c b)
+		(a c d b gis)
+		(d c a)
+		(b b a)
+		(gis gis a)
+	)
+)
+
+
+; Added an extra '8 everywhere because the melody mostly contains eigth notes.
+(define ritme_tomjones_sexbomb '(
+		(4 4 8 8)
+		(8 8 4 8)
+	)
+)
+
+(validate-graph tomjones_sexbomb)
+; Gives #t
+(validate-graph ritme_tomjones_sexbomb)
+; Gives #t
+
+; Function that creates the melody with the successors.
+(define (startmelodie_tomjones n [x 1])
+	(if
+		(= x 45)
+		'()
+		(cons
+			n
+			(startmelodie_tomjones (get-note tomjones_sexbomb n) (+ x 1))
+		)
+	)
+)
+
+; Function that creates the rythm with the successors.
+(define (startritme_tomjones n [x 1])
+	(if
+		(= x 45)
+		'()
+		(cons
+			n
+			(startritme_tomjones (get-rythm ritme_tomjones_sexbomb n) (+ x 1))
+		)
+	)
+)
+
+; Melody starts with 'c because the original melody starts with the 'c aswell.
+(define melodie_tomjones (startmelodie_tomjones 'c))
+(define ritme_tomjones (startritme_tomjones 8))
+(define MIDI_melodie_tomjones (make-phrase (notes-to-numbers melodie_tomjones) ritme_tomjones))
+(define final_melodie_tomjones (transpose-phrase MIDI_melodie_tomjones 60))
+
+(lilypond-open "Tom Jones - Sex Bomb (Reprise).ly")
+(lilypond-title "Tom Jones - Sex Bomb (Reprise)")
+(lilypond-composer "by T. Nieuwenhuis")
+(lilypond-key "c" "major")
+(lilypond-clef "treble")
+(lilypond-tempo 123) ; Original song also has 123 bpm
+(lilypond-instrument "guitar" "acoustic guitar (nylon)")
+(lilypond-write final_melodie_tomjones)
+(lilypond-close)
