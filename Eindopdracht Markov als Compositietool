@@ -1,58 +1,56 @@
-#lang racket
-
 ; Eindopdracht Markov als Compositietool
 
 ; Opdracht 1 - Zoek melodieën
-Zie
-D:\School\SysBas\Scheme Opdrachten\Eindopdracht Scheme\
-voor de partituren
+; Zie
+; D:\School\SysBas\Scheme Opdrachten\Eindopdracht Scheme\
+; voor de partituren
 
 ; Opdracht 2 - Teken de graphs
-Hieronder staan de noten/nootlengtes met daarachter hun mogelijke opvolgers:
+; Hieronder staan de noten/nootlengtes met daarachter hun mogelijke opvolgers:
 
-Aqua - Barbie Girl
+; Aqua - Barbie Girl
 
-gis -> e, cis, fis
-e   -> gis, dis, e, cis
-cis -> a, fis
-a   -> e, a, fis
-dis -> fis
-fis -> b, e, cis, dis, fis
-b   -> gis
+; gis -> e, cis, fis
+; e   -> gis, dis, e, cis
+; cis -> a, fis
+; a   -> e, a, fis
+; dis -> fis
+; fis -> b, e, cis, dis, fis
+; b   -> gis
 
-8 -> 8 2 4
-2 -> 8
-4 -> 8 4
+; 8 -> 8 2 4
+; 2 -> 8
+; 4 -> 8 4
 
-Tom Jones - Sex Bomb
+; Tom Jones - Sex Bomb
 
-c   -> a, d, c, b
-a   -> c, d, b, gis
-d   -> c, a
-b   -> b, a
-gis -> gis, a
+; c   -> a, d, c, b
+; a   -> c, d, b, gis
+; d   -> c, a
+; b   -> b, a
+; gis -> gis, a
 
-4 -> 4 8
-8 -> 8 4
+; 4 -> 4 8
+; 8 -> 8 4
 
 ; Opdracht 3 - Nieuwe Compositie
-De nieuwe melodie moet bestaan uit een rij noten die bepaald worden door een algoritme.
-Dit algoritme moet ervoor zorgen dat steeds de eerstvolgende noot bepaald wordt d.m.v. de graphs uit de vorige opdracht.
-Hetzelfde moet gebeuren met de nootlengtes. Deze worden ook uit de graphs gehaald en zo wordt bepaald door het algoritme welke
-nootlengte de noten moeten krijgen.
+; De nieuwe melodie moet bestaan uit een rij noten die bepaald worden door een algoritme.
+; Dit algoritme moet ervoor zorgen dat steeds de eerstvolgende noot bepaald wordt d.m.v. de graphs uit de vorige opdracht.
+; Hetzelfde moet gebeuren met de nootlengtes. Deze worden ook uit de graphs gehaald en zo wordt bepaald door het algoritme welke
+; nootlengte de noten moeten krijgen.
 
-In beide melodieën zitten veel meer 8e noten dan kwart of halve noten. Hierdoor is het misschien handig om in de daadwerkelijke -schemelijst-
-een 8 er bij te zetten zodat er meer kans is dat de volgende noot een 8e noot is. Dit kan natuurlijk later altijd aangepast worden.
+; In beide melodieën zitten veel meer 8e noten dan kwart of halve noten. Hierdoor is het misschien handig om in de daadwerkelijke -schemelijst-
+; een 8 er bij te zetten zodat er meer kans is dat de volgende noot een 8e noot is. Dit kan natuurlijk later altijd aangepast worden.
 
 ; Opdracht 4 - Algoritme
-Als eerste moet ik de (get-successor) functie gebruiken uit de opdracht van 19-10-17. Deze functie ga ik gebruiken om steeds de volgende noot/nootlengte te kiezen.
-Daarna moet ik de graph van een melodie in lijstjes zetten die in één grote lijst zit. Dus er komt een noot-successor-lijst en een nootlengte-successor-lijst.
+; Als eerste moet ik de (get-successor) functie gebruiken uit de opdracht van 19-10-17. Deze functie ga ik gebruiken om steeds de volgende noot/nootlengte te kiezen.
+; Daarna moet ik de graph van een melodie in lijstjes zetten die in één grote lijst zit. Dus er komt een noot-successor-lijst en een nootlengte-successor-lijst.
 
-Als dat klaar is moet er een functie komen die de melodie zelf maakt d.m.v. de successor functie te gebruiken. Dus als deze functie wordt uitgevoerd komt er steeds
-een andere melodie uit. Deze functie moet ook voor de nootlengtes komen.
+; Als dat klaar is moet er een functie komen die de melodie zelf maakt d.m.v. de successor functie te gebruiken. Dus als deze functie wordt uitgevoerd komt er steeds
+; een andere melodie uit. Deze functie moet ook voor de nootlengtes komen.
 
-Daarna moeten deze functies worden uitgevoerd om de daadwerkelijke melodie en ritme te maken. Als laatste wordt deze melodie omhoog getransponeerd,
-samen gevoegd met het ritme en wordt het geschreven in een lilypond bestand (.ly) net zoals bij de opdracht van 21-09-17.
+; Daarna moeten deze functies worden uitgevoerd om de daadwerkelijke melodie en ritme te maken. Als laatste wordt deze melodie omhoog getransponeerd,
+; samen gevoegd met het ritme en wordt het geschreven in een lilypond bestand (.ly) net zoals bij de opdracht van 21-09-17.
 
 ; Opdracht 5 - Werk je algoritme uit in Scheme
 
